@@ -1,0 +1,41 @@
+{
+  "author": "Heorhii Kuzmenko",
+  "name": "foodorderjava",
+  "description": "Food order by best java team",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@git.epam.com:oleksandr_galkin/foodorderjava.git"
+  },
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "npm install",
+    "build": "gulp"
+  },
+  "dependencies": {
+    "angular": "^1.5.7",
+    "angular-resource": "^1.5.7",
+    "angular-route": "^1.5.7",
+    "angular-utils-pagination": "^0.11.1"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-core": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-register": "^6.9.0",
+    "babelify": "^7.3.0",
+    "browser-sync": "^2.13.0",
+    "browserify": "^13.0.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-if": "^2.0.1",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "stringify": "^5.1.0",
+    "uglifyify": "^3.0.2",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}

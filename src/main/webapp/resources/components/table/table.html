@@ -1,0 +1,65 @@
+<div class="table-view table-component">
+    <div class="table-view__header table-component__header">
+        <div class="table-view__header-th table-component__header-th">Name</div>
+        <div class="table-view__header-th table-component__header-th"></div>
+    </div>
+    <div class="table-view__body">
+        <div class="table-view__body-row" ng-repeat="(key, element) in tableCtrl.dataObject.list">
+            <div class="table-view__body-td">
+                <span ng-if="element.id != tableCtrl.editingId">{{element.name}}</span>
+                <form class="table-view__body-form" ng-if="element.id == tableCtrl.editingId" name="nameForm"
+                        autocomplete="off">
+                    <input class="table-view__body-form-input" type="text" name="editingObjectName"
+                            id="editingObjectName" ng-class="tableCtrl.checkStyle(nameForm.editingObjectName.$valid)"
+                            ng-pattern="tableCtrl.regexName" ng-model="tableCtrl.editingObject.name" required>
+                </form>
+            </div>
+            <div class="table-view__body-td">
+                <div ng-if="element.id != tableCtrl.editingId">
+                    <i class="table-view__body-btn table-view__body-btn--accept glyphicon glyphicon-edit"
+                            ng-click="tableCtrl.editing(element)" title="Edit">
+                    </i>
+                    <i class="table-view__body-btn table-view__body-btn--delete glyphicon glyphicon-trash"
+                            ng-click="tableCtrl.delete(element)" title="Delete">
+                    </i>
+                </div>
+                <div ng-if="element.id == tableCtrl.editingId">
+                    <i class="table-view__body-btn table-view__body-btn--save glyphicon glyphicon-floppy-disk"
+                            ng-click="tableCtrl.editObject(key)" title="Save">
+                    </i>
+                    <i class="table-view__body-btn table-view__body-btn--cancel glyphicon glyphicon-remove"
+                            ng-click="tableCtrl.cancel()" title="Cancel">
+                    </i>
+
+                </div>
+            </div>
+        </div>
+        <div class="table-view__body-last-row">
+            <div class="table-view__body-last-row-td">
+                <form class="table-view__body-form" ng-if="tableCtrl.addObjectInProcess"
+                        name="addTableNameForm" autocomplete="off">
+                    <input class="table-view__body-form-input" type="text" name="addingObjectName"
+                            id="addingObjectName"
+                            ng-class="tableCtrl.checkStyle(addTableNameForm.addingObjectName.$valid)"
+                            ng-pattern="tableCtrl.regexName" ng-model="tableCtrl.newObject.name" maxlength="5"
+                            required>
+                </form>
+            </div>
+            <div class="table-view__body-last-row-td" ng-if="!tableCtrl.addObjectInProcess">
+                <button type="button" class="table-view__body-btn table-view__body-btn--add"
+                        ng-click="tableCtrl.addingObject()">Add new
+                </button>
+            </div>
+            <div class="table-view__body-last-row-td" ng-if="tableCtrl.addObjectInProcess">
+                <div>
+                    <i class="table-view__body-btn table-view__body-btn--create glyphicon glyphicon-floppy-disk"
+                            ng-click="tableCtrl.addToList()" title="Create">
+                    </i>
+                    <i class="table-view__body-btn table-view__body-btn--cancel glyphicon glyphicon-remove"
+                            ng-click="tableCtrl.clear()" title="Cancel">
+                    </i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

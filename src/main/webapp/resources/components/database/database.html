@@ -1,0 +1,68 @@
+<div class="table-view database-component">
+    <div class="table-view__header database-component__header">
+        <div class="table-view__header-th database-component__header-th">Name</div>
+        <div class="table-view__header-th database-component__header-th"></div>
+    </div>
+    <div class="table-view__body">
+        <div class="table-view__body-row" ng-repeat="(key, element) in databaseCtrl.dataObject.list">
+            <div class="table-view__body-td">
+                <span ng-if="element.id != databaseCtrl.editingId">{{element.name}}</span>
+                <form class="table-view__body-form" ng-if="element.id == databaseCtrl.editingId" name="nameForm"
+                        autocomplete="off">
+                    <input class="table-view__body-form-input" type="text" name="editingObjectName"
+                            id="editingObjectName" ng-class="databaseCtrl.checkStyle(nameForm.editingObjectName.$valid)"
+                            ng-pattern="databaseCtrl.regexName" ng-model="databaseCtrl.editingObject.name" required>
+                </form>
+            </div>
+            <div class="table-view__body-td">
+                <div ng-if="element.id != databaseCtrl.editingId">
+                    <i class="table-view__body-btn table-view__body-btn--accept glyphicon glyphicon-edit"
+                            ng-click="databaseCtrl.editing(element)" title="Edit">
+                    </i>
+                    <i class="table-view__body-btn table-view__body-btn--delete glyphicon glyphicon-trash"
+                            ng-click="databaseCtrl.delete(element)" title="Delete">
+                    </i>
+                    <i class="table-view__body-btn table-view__body-btn--accept glyphicon glyphicon-list-alt"
+                       ng-click="databaseCtrl.goToTable(element.id)" title="GoToTables">
+                    </i>
+                </div>
+                <div ng-if="element.id == databaseCtrl.editingId">
+                    <i class="table-view__body-btn table-view__body-btn--save glyphicon glyphicon-floppy-disk"
+                            ng-click="databaseCtrl.editObject(key)" title="Save">
+                    </i>
+                    <i class="table-view__body-btn table-view__body-btn--cancel glyphicon glyphicon-remove"
+                            ng-click="databaseCtrl.cancel()" title="Cancel">
+                    </i>
+
+                </div>
+            </div>
+        </div>
+        <div class="table-view__body-last-row">
+            <div class="table-view__body-last-row-td">
+                <form class="table-view__body-form" ng-if="databaseCtrl.addObjectInProcess"
+                        name="addDatabaseNameForm" autocomplete="off">
+                    <input class="table-view__body-form-input" type="text" name="addingObjectName"
+                            id="addingObjectName"
+                            ng-class="databaseCtrl.checkStyle(addDatabaseNameForm.addingObjectName.$valid)"
+                            ng-pattern="databaseCtrl.regexName" ng-model="databaseCtrl.newObject.name"
+                            required>
+                </form>
+            </div>
+            <div class="table-view__body-last-row-td" ng-if="!databaseCtrl.addObjectInProcess">
+                <button type="button" class="table-view__body-btn table-view__body-btn--add"
+                        ng-click="databaseCtrl.addingObject()">Add new
+                </button>
+            </div>
+            <div class="table-view__body-last-row-td" ng-if="databaseCtrl.addObjectInProcess">
+                <div>
+                    <i class="table-view__body-btn table-view__body-btn--create glyphicon glyphicon-floppy-disk"
+                            ng-click="databaseCtrl.addToList()" title="Create">
+                    </i>
+                    <i class="table-view__body-btn table-view__body-btn--cancel glyphicon glyphicon-remove"
+                            ng-click="databaseCtrl.clear()" title="Cancel">
+                    </i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
