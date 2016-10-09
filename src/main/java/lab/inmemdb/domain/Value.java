@@ -1,39 +1,26 @@
 package lab.inmemdb.domain;
 
-import lab.inmemdb.infrastructure.DataType;
+import java.io.Serializable;
 
-public class Value<T> {
+public class Value implements Serializable{
 
-    private T value;
-    private String type;
+    private String value;
+    private TableAttribute tableAttribute;
 
-    public Value(T value, String type) {
-        this.value = value;
-        this.type = type;
-    }
-
-    public T getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(T value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
-    public String getType() {
-        return type;
+    public TableAttribute getTableAttribute() {
+        return tableAttribute;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return "Value{" +
-                "value=" + value +
-                ", type=" + type +
-                '}';
+    public void setTableAttribute(TableAttribute tableAttribute) {
+        this.tableAttribute = tableAttribute;
     }
 
     @Override
@@ -45,19 +32,19 @@ public class Value<T> {
             return false;
         }
 
-        Value<?> value1 = (Value<?>) o;
+        Value value1 = (Value) o;
 
         if (value != null ? !value.equals(value1.value) : value1.value != null) {
             return false;
         }
-        return type == value1.type;
+        return tableAttribute != null ? tableAttribute.equals(value1.tableAttribute) : value1.tableAttribute == null;
 
     }
 
     @Override
     public int hashCode() {
         int result = value != null ? value.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (tableAttribute != null ? tableAttribute.hashCode() : 0);
         return result;
     }
 }

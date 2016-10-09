@@ -1,18 +1,22 @@
 package lab.inmemdb.service.impl;
 
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,80 +27,99 @@ import lab.inmemdb.domain.Table;
 import lab.inmemdb.domain.TableAttribute;
 import lab.inmemdb.domain.Value;
 import lab.inmemdb.infrastructure.DataType;
+import lab.inmemdb.infrastructure.exceptions.IncompatibleDataTypeException;
 import lab.inmemdb.repository.TableDao;
+import lab.inmemdb.service.RecordService;
 import lab.inmemdb.service.SearchService;
+import lab.inmemdb.service.TableAttributeService;
 
-@ContextConfiguration(locations = {"classpath:/applicationContext.xml",
-        "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml" })
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class SearchServiceImplTest {
 
-    @Autowired
-    private SearchService searchService;
+    @Mock
+    private RecordService recordService;
 
-    @Autowired
-    private TableDao tableDao;
+    @Mock
+    private TableAttributeService attributeService;
 
-    @Test
-    public void test(){
+    @InjectMocks
+    private SearchServiceImpl searchService;
 
+
+    TableAttribute ta1, ta2, ta3;
+    Record record1, record2;
+
+    @Before
+    public void setUp(){
+        Database database = new Database();
+        database.setId(1);
+        database.setName("MyDatabase");
+
+        Table table = new Table();
+        table.setId(1);
+        table.setDatabase(database);
+        table.setName("MyTable");
+
+        ta1 = new TableAttribute();
+        ta1.setId(1);
+        ta1.setName("BookName");
+        ta1.setType(DataType.CHAR);
+        ta1.setTable(table);
+
+        ta2 = new TableAttribute();
+        ta2.setId(2);
+        ta2.setName("Author");
+        ta2.setType(DataType.CHAR);
+        ta2.setTable(table);
+
+        ta3 = new TableAttribute();
+        ta3.setId(3);
+        ta3.setName("Year");
+        ta3.setType(DataType.INT);
+        ta3.setTable(table);
+
+        List<Value> valueForRecords = new ArrayList<>();
+        Value book = new Value();
+        book.setTableAttribute(ta1);
+        book.setValue("Sherlock Holmes. Part 1");
+        Value author = new Value();
+        author.setTableAttribute(ta2);
+        author.setValue("Arthur Conan Doyle");
+        Value year = new Value();
+        year.setTableAttribute(ta3);
+        year.setValue("1888");
+
+        valueForRecords.add(book);
+        valueForRecords.add(author);
+        valueForRecords.add(year);
+
+        record1 = new Record();
+        record1.setId(1);
+        record1.setTable(table);
+        record1.setValues(valueForRecords);
+
+        book.setValue("Sherlock Holmes. Part 2");
+        record2 = new Record();
+        record2.setId(2);
+        record2.setTable(table);
+        record2.setValues(valueForRecords);
     }
 
     @Test
-    public void findRecordsByPattern_whenResultNotEmpty() throws ClassNotFoundException {
-        Database db = new Database();
+    public void shouldReturnEmptyResultInCaseOfWrongSearchParameters() throws IncompatibleDataTypeException,
+            ClassNotFoundException {
+        when(attributeService.getById(anyInt())).thenReturn(ta3);
+        List<Record> records = searchService.findRecordsByPattern(1, "Arthur Conan Doyle");
+        verify(recordService, never()).findAllByTableId(anyInt());
+        Assert.assertThat("nothing to find", records.size(), is(0));
+    }
 
-        Table table = new Table();
-        table.setName("Cars");
-        table.setDatabase(db);
-        table.setId(1);
-
-        List<TableAttribute> tableAttributes = new ArrayList<>();
-        TableAttribute t1 = new TableAttribute();
-        t1.setName("Model");
-        t1.setTable(table);
-        t1.setType("String");
-
-        TableAttribute t2 = new TableAttribute();
-        t2.setName("Engine Power");
-        t2.setTable(table);
-        t2.setType("Integer");
-
-        table.setTableAttributes(tableAttributes);
-
-        Map<TableAttribute, Value> bmw = new HashMap<>();
-        bmw.put(t1, new Value("BMW", "String"));
-        bmw.put(t2, new Value(200, "Integer"));
-
-        Record r1 = new Record();
-        r1.setValues(bmw);
-        r1.setTable(table);
-
-        Value<Integer> expectedValue = new Value("Merc", "String");
-        Map<TableAttribute, Value> merc = new HashMap<>();
-        merc.put(t1, expectedValue);
-        merc.put(t2, new Value(300, "Integer"));
-
-
-
-        Record r2 = new Record();
-        r2.setValues(merc);
-        r2.setTable(table);
-
-        tableAttributes.add(t1);
-        tableAttributes.add(t2);
-        table.setTableAttributes(tableAttributes);
-        table.setRecords(Arrays.asList(r1, r2));
-
-
-        Map<TableAttribute, Value> find = new HashMap<>();
-        TableAttribute ta = new TableAttribute("Engine Power", "Integer");
-        find.put(ta, new Value(300, "Integer"));
-
-        tableDao.create(table);
-        System.out.println(searchService.findRecordsByPattern(1, find));
-        Assert.assertThat("One record was found",
-                searchService.findRecordsByPattern(1, find).get(0).getValues().get(t1), is(expectedValue));
-
+    @Test
+    public void shouldReturnResultWithTwoRecords() throws IncompatibleDataTypeException, ClassNotFoundException {
+        when(attributeService.getById(anyInt())).thenReturn(ta2);
+        when(recordService.findAllByTableId(anyInt())).thenReturn(Arrays.asList(record1, record2));
+        List<Record> records = searchService.findRecordsByPattern(2, "Arthur Conan Doyle");
+        verify(recordService).findAllByTableId(anyInt());
+        Assert.assertThat("nothing to find", records.size(), is(2));
     }
 }

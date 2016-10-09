@@ -1,19 +1,16 @@
 package lab.inmemdb.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Table {
+public class Table implements Serializable{
 
-    private static Integer count = 1;
-
-    private Integer id = count++;
+    private Integer id;
     private Database database;
     private String name;
-    private List<TableAttribute> tableAttributes = new ArrayList<>();
-    private List<Record> records = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -37,22 +34,6 @@ public class Table {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<TableAttribute> getTableAttributes() {
-        return tableAttributes;
-    }
-
-    public void setTableAttributes(List<TableAttribute> tableAttributes) {
-        this.tableAttributes = tableAttributes;
-    }
-
-    public List<Record> getRecords() {
-        return records;
-    }
-
-    public void setRecords(List<Record> records) {
-        this.records = records;
     }
 
     @Override

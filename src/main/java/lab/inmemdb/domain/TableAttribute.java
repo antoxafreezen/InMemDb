@@ -1,12 +1,14 @@
 package lab.inmemdb.domain;
 
+import java.io.Serializable;
+
 import lab.inmemdb.infrastructure.DataType;
 
-public class TableAttribute {
-
+public class TableAttribute implements Serializable{
+    private Integer id;
     private String name;
     private Table table;
-    private String type;
+    private DataType type;
 
     public String getName() {
         return name;
@@ -24,19 +26,27 @@ public class TableAttribute {
         this.table = table;
     }
 
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public TableAttribute(){
 
     }
 
-    public TableAttribute(String name, String type) {
+    public TableAttribute(String name, DataType type) {
         this.name = name;
         this.type = type;
     }

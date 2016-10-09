@@ -1,7 +1,6 @@
 package lab.inmemdb.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import lab.inmemdb.domain.Table;
 

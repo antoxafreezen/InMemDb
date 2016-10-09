@@ -1,13 +1,12 @@
 package lab.inmemdb.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Database {
+public class Database implements Serializable{
 
-    private static Integer count = 1;
-
-    private Integer id = count++;
+    private Integer id;
     private String name;
 
     public Integer getId() {
@@ -37,10 +36,7 @@ public class Database {
 
         Database database = (Database) o;
 
-        if (id != null ? !id.equals(database.id) : database.id != null) {
-            return false;
-        }
-        return name != null ? name.equals(database.name) : database.name == null;
+        return id != null ? id.equals(database.id) : database.id == null;
 
     }
 

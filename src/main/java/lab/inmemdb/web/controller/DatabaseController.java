@@ -20,8 +20,12 @@ import lab.inmemdb.service.DatabaseService;
 @RequestMapping(value = "/api/databases")
 public class DatabaseController {
 
-    @Autowired
     private DatabaseService databaseService;
+
+    @Autowired
+    public DatabaseController(DatabaseService databaseService) {
+        this.databaseService = databaseService;
+    }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<Database> addDatabase(@RequestBody Database database, UriComponentsBuilder ucBuilder) {

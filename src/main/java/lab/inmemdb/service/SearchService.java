@@ -6,7 +6,8 @@ import java.util.Map;
 import lab.inmemdb.domain.Record;
 import lab.inmemdb.domain.TableAttribute;
 import lab.inmemdb.domain.Value;
+import lab.inmemdb.infrastructure.exceptions.IncompatibleDataTypeException;
 
 public interface SearchService {
-    List<Record> findRecordsByPattern(Integer tableId, Map<TableAttribute, Value> values) throws ClassNotFoundException;
+    List<Record> findRecordsByPattern(Integer attrId, String value) throws ClassNotFoundException, IncompatibleDataTypeException;
 }

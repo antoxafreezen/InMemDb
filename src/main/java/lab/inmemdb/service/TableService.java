@@ -8,4 +8,10 @@ public interface TableService {
     Iterable<Table> findAllByDbId(Integer id);
 
     Table addTableToDb(String name, Integer dbId);
+
+    Table updateName(Table table);
+
+    Table removeById(Integer id);
+
+    Table getTableById(Integer tbId);
 }

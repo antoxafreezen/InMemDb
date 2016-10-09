@@ -1,24 +1,57 @@
 package lab.inmemdb.repository.inmem;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import lab.inmemdb.domain.Table;
+import lab.inmemdb.repository.SequenceManager;
 import lab.inmemdb.repository.TableDao;
 
 @Repository
-public class InMemTableDao implements TableDao{
+public class InMemTableDao implements TableDao {
 
-    private List<Table> tables = new ArrayList<>();
+    @Autowired
+    private SequenceManager sequenceManager;
 
+    private ArrayList<Table> tables = new ArrayList<>();
+
+    @PreDestroy
+    public void serialize() throws IOException {
+        FileOutputStream fos = new FileOutputStream("tables.out");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(tables);
+        oos.flush();
+        oos.close();
+    }
+
+    @PostConstruct
+    public void deserialize() throws IOException, ClassNotFoundException {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream("tables.out");
+            ObjectInputStream oin = new ObjectInputStream(fis);
+            tables = (ArrayList) oin.readObject();
+        } catch (Exception e) {
+            tables = new ArrayList<>();
+        }
+    }
 
     @Override
     public Table create(Table table) {
+        table.setId(sequenceManager.getTableSequence());
         tables.add(table);
-        for (Table d : tables){
+        for (Table d : tables) {
             if (d.equals(table)) {
                 return d;
             }
@@ -34,7 +67,14 @@ public class InMemTableDao implements TableDao{
 
     @Override
     public Table update(Table table) {
-        return create(table);
+        for (Table d : tables) {
+            if (d.equals(table)) {
+                d.setName(table.getName());
+                d.setDatabase(table.getDatabase());
+                return d;
+            }
+        }
+        return table;
     }
 
     @Override

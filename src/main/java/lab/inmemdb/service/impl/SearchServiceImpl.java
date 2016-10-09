@@ -1,55 +1,41 @@
 package lab.inmemdb.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lab.inmemdb.domain.TableAttribute;
 import lab.inmemdb.domain.Record;
-import lab.inmemdb.domain.Table;
-import lab.inmemdb.domain.Value;
-import lab.inmemdb.repository.TableDao;
+import lab.inmemdb.domain.TableAttribute;
+import lab.inmemdb.infrastructure.DataTypeUtils;
+import lab.inmemdb.infrastructure.exceptions.IncompatibleDataTypeException;
+import lab.inmemdb.service.RecordService;
 import lab.inmemdb.service.SearchService;
+import lab.inmemdb.service.TableAttributeService;
 
 @Service
 public class SearchServiceImpl implements SearchService {
 
     @Autowired
-    private TableDao tableDao;
+    private TableAttributeService attributeService;
+
+    @Autowired
+    private RecordService recordService;
 
     @Override
-    public List<Record> findRecordsByPattern(Integer tableId, Map<TableAttribute, Value> values) throws
+    public List<Record> findRecordsByPattern(Integer attrId, String value) throws
             ClassNotFoundException {
-
         List<Record> result = new ArrayList<>();
-
-        Set<TableAttribute> attributes = values.keySet();
-
-        Table table = tableDao.getById(tableId);
-
-        if (!table.getTableAttributes().containsAll(attributes)) {
-            return result;
-        }
-
-        for (Record record : table.getRecords()){
-            boolean addToResult = true;
-            for (TableAttribute tableAttribute : attributes){
-                if (!record.getValues().get(tableAttribute).equals(values.get(tableAttribute))){
-                    addToResult = false;
-                    break;
-                }
-            }
-            if (addToResult) {
-                result.add(record);
+        TableAttribute attribute = attributeService.getById(attrId);
+        if (DataTypeUtils.isCorrespondedValue(attribute, value)) {
+            List<Record> records = (List<Record>) recordService.findAllByTableId(attribute.getTable().getId());
+            for (Record record : records) {
+                result.addAll(record.getValues().stream().filter(v -> v.getTableAttribute().equals(attribute) && v
+                        .getValue().equals(value)).map(v -> record).collect(Collectors.toList()));
             }
         }
-
         return result;
     }
 }
